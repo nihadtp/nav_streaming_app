@@ -46,3 +46,15 @@ C -- Stream invalid data--> B[[Error Analyzer]]
 F[Data Analyst] -- Adhoc query--> E
 ```
 
+
+### API service
+We use a free API service from https://rapidapi.com/suneetk92/api/latest-mutual-fund-nav/.  A python service app is implimented to fetch large amount of API responses concurrently and feed them to a Kafka topic asynchrously. Data is fetched from 2008 to current data. After that, it is fetch incrementally on a daily bases. It is assumed that API service has no down time and failures.
+
+### Kafka
+Two topics created - Input for spark app and output for spark app. API service app is responsible for producing data for input topic. Spark app is responsible for producing data for output topic.
+
+### Spark Application
+Spark ingest data from kafka. Main operations performed are data validation, data transformation, data partitioning and data write to HDFS. Processes data in micro batches in every 5 seconds. We receive 4-8 records every second. Invalid data sent back to an error topic. Application is fault tolerant. It regularly commits offset asynchronously so that when application is failed or took down for upgradation we can always resume back from the last committed offset.
+
+### HDFS
+Output data is encoded in parqeut due to it's columnar storage. Since this is a OLAP transactions, query involving columns selections can be very fast. HDFS is scalable and can be partitioned based on keys. 
