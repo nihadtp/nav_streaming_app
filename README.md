@@ -57,4 +57,12 @@ Two topics created - Input for spark app and output for spark app. API service a
 Spark ingest data from kafka. Main operations performed are data validation, data transformation, data partitioning and data write to HDFS. Processes data in micro batches in every 5 seconds. We receive 4-8 records every second. Invalid data sent back to an error topic. Application is fault tolerant. It regularly commits offset asynchronously so that when application is failed or took down for upgradation we can always resume back from the last committed offset.
 
 ### HDFS
-Output data is encoded in parqeut due to it's columnar storage. Since this is a OLAP transactions, query involving columns selections can be very fast. HDFS is scalable and can be partitioned based on keys. 
+Output data is encoded in parqeut due to it's columnar storage. Since this is a OLAP transactions, query involving columns selections can be very fast. HDFS is scalable and can be partitioned based on keys.
+
+## Specs
+
+Everything is tested in local system:
+Kafka -> 1 broker, 2 topics, 4 partitions, 1 replication
+Spark -> 1 driver, 1 executor, 4 cores, 4g
+
+Total time to process initial data from Jan1 2008 till today -> 45-55 mnts
